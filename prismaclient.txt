@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                String      @id @default(uuid())
+  nome              String
+  data_nascimento   DateTime
+  email             String
+  endereco          String
+  cpf               String
+  telefone          String
+  sugestoes         Sugestao[]
+  emprestimos       Emprestimo[]
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @default(now())
+}
+
+model Sugestao {
+  id                String      @id @default(uuid())
+  motivo            String
+  livro_sugerido    String
+  data_sugestao     DateTime
+  usuario           Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId         String
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @default(now())
+}
+
+model Emprestimo {
+  id                String      @id @default(uuid())
+  data_emprestimo   DateTime
+  data_devolucao    DateTime
+  status            String
+  usuario           Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId         String
+  livro             Livro       @relation(fields: [livroId], references: [id])
+  livroId           String
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @default(now())
+}
+
+model Livro {
+  isbn              String      @id
+  titulo            String
+  ano_publicacao    Int
+  quantidade_disponivel Int
+  autor             Autor       @relation(fields: [autorId], references: [id])
+  autorId           String
+  emprestimos       Emprestimo[]
+  categorias        Categoria[] @relation(fields: [categoriaId], references: [id])
+  categoriaId       String[]
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @default(now())
+}
+
+model Autor {
+  id                String      @id @default(uuid())
+  nome              String
+  data_nascimento   DateTime
+  nacionalidade     String
+  livros            Livro[]
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @default(now())
+}
+
+model Categoria {
+  id                String      @id @default(uuid())
+  nome              String
+  descricao         String
+  livros            Livro[]
+  created_at        DateTime    @default(now())
+  updated_at        DateTime    @default(now())
+}
